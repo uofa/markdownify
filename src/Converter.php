@@ -195,7 +195,7 @@ class Converter
     ];
 
     /**
-     * wether last processed node was a block tag or not
+     * whether last processed node was a block tag or not
      *
      * @var bool
      */
@@ -226,6 +226,13 @@ class Converter
      * @var string
      */
     protected $indent = '';
+
+    /**
+     * previous indentation, when we want to disable current indentation and get it back later
+     *
+     * @var string
+     */
+    private string $previousIndent = '';
 
     /**
      * constructor, set options, setup parser
@@ -534,8 +541,7 @@ class Converter
                     // don't indent inside <pre> tags
                     if ($this->parser->tagName == 'pre') {
                         $this->out($this->parser->node);
-                        static $indent;
-                        $indent = $this->indent;
+                        $this->previousIndent = $this->indent;
                         $this->indent = '';
                     } else {
                         $this->out($this->parser->node . "\n" . $this->indent);
@@ -556,8 +562,7 @@ class Converter
                     } else {
                         // reset indentation
                         $this->out($this->parser->node);
-                        static $indent;
-                        $this->indent = $indent;
+                        $this->previousIndent = $this->indent;
                     }
 
                     if (in_array($this->parent(), ['ins', 'del'])) {
